@@ -39,20 +39,43 @@ case object problem1 {
 
   def siblings(p: String): Either[String, List[String]] = {
     val parent = parents(p)
-    lazy val sibs = LazyList()
+    var sibs = List[String]()
     parent match {
       case Right((m: String, d: String)) =>
         for (person <- royalParent.keys) {
-          val a = parents(person).getOrElse(("",""))
-          if (a == (m,d) || a == (d,m)) {
-            sibs.prepended(person)
+          if (!person.equals(p)) {
+            if (parents(person).getOrElse(("", "")) == (m, d) || parents(person).getOrElse(("", "")) == (d, m)) {
+              sibs = person :: sibs
+            }
           }
-
         }
-        Right(sibs.toList)
+        Right(sibs)
       case Left(error) => Left(error)
     }
   }
+
+  def firstCousins(p: String): Either[String, List[String]] = {
+    var cousins = List[String]()
+    for (person <- royalParent.keys) {
+      if (!person.equals(p) && !siblings(p).getOrElse(("","")).toString.contains(person)) {
+        if (grandparents(person) == grandparents(p)) {
+          cousins = person :: cousins
+        }
+      }
+    }
+    Right(cousins)
+  }
+
+  def uncles(p: String): Either[String, List[String]] = {
+    val parent = parents(p)
+    if (parent.isRight) {
+      val royalAsAndUs: List[String] = siblings(parent.getOrElse(("",""))._1).getOrElse(Nil)
+      Right(royalAsAndUs.filter(royalParent(_)._1 == "m"))
+    } else {
+      Left(p + " has no parental information to find their royal uncle(s)")
+    }
+  }
+
   def main(args: Array[String]): Unit = {
     println("parents of August should be (Eugenie,Jack)")
     println(parents("August"))
@@ -76,7 +99,17 @@ case object problem1 {
     println(grandparents("Elizabeth"))
     println("--------------------")
 
+    println("George's siblings should be Charlotte and Louis")
     println(siblings("George"))
+
+    println("George's first cousins should be Archie")
+    println(firstCousins("George"))
+
+    println("Elizabeth's siblings should be NiL")
+    println(siblings("Elizabeth"))
+
+
+    println(uncles("George"))
 
   }
 }
