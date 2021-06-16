@@ -3,7 +3,7 @@ Bronson Schultz, 11231230, bcs269
 CMPT 340 A3 Q1
  */
 
-// object to hold the family tree and it's relevent functions
+// object to hold the family tree and it's relevant functions
 case object problem1 {
 
   // map of the royal family tree. Keys are members' names and values are tuples containing their parents' names and gender
